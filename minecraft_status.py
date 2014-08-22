@@ -14,13 +14,13 @@ import sys
 
 def ping(host, port, results = None):
   """Ping a port....."""
-    try:
-        socket.socket().connect((host, port))
-        if results is not None:
-            results.append(port)
-        return True
-    except:
-        return False
+  try:
+    socket.socket().connect((host, port))
+    if results is not None:
+      results.append(port)
+    return True
+  except:
+    return False
 
 
 def GetMCStatus(hostname, port=25565, timeout=0.5):
