@@ -12,6 +12,16 @@ import logging
 import socket
 import sys
 
+def ping(host, port, results = None):
+  """Ping a port....."""
+    try:
+        socket.socket().connect((host, port))
+        if results is not None:
+            results.append(port)
+        return True
+    except:
+        return False
+
 
 def GetMCStatus(hostname, port=25565, timeout=0.5):
   """Query a minecraft beta server.
@@ -31,15 +41,18 @@ def GetMCStatus(hostname, port=25565, timeout=0.5):
   try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     ip = socket.gethostbyname(hostname)
-    s.connect((ip, port))
-    s.settimeout(timeout)
-    s.send(chr(254))
-    data, _ = s.recvfrom(2048)
-    if data[0] == chr(255):
-      data, _ = codecs.utf_16_be_decode(data[1:])
-      data = data[1:]
-      p = data.split(u'\xa7')
-      return [True] + p
+    if ping(ip, port):
+        s.connect((ip, port))
+        s.settimeout(timeout)
+        s.send(chr(254))
+        data, _ = s.recvfrom(2048)
+        if data[0] == chr(255):
+          data, _ = codecs.utf_16_be_decode(data[1:])
+          data = data[1:]
+          p = data.split(u'\xa7')
+          return [True] + p
+    else:
+          return [False]
   except socket.error:
     logging.exception('Socket error when querying from %s', hostname)
   return [False]
